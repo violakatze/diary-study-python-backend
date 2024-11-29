@@ -1,6 +1,6 @@
-pythonを使ったバックエンドの習作
-フロントエンドはこれをそのまま使える↓
-https://github.com/violakatze/diary-study
+pythonを使ったバックエンドの習作  
+フロントエンドはこれをそのまま使える↓  
+https://github.com/violakatze/diary-study  
 
 起動
 ```
