@@ -37,17 +37,17 @@ def get_all(session: Session = Depends(get_db)):
     return crud.get_all(session)
 
 
-@app.get("/api/Daily/Get", response_model=Daily)
+@app.get("/api/Daily/Get", response_model=Daily, responses={400: {"model": str}})
 def get(id: int, session: Session = Depends(get_db)):
     return crud.get(session, id)
 
 
-@app.post("/api/Daily/Add")
+@app.post("/api/Daily/Add", responses={400: {"model": str}})
 def add(daily: Daily, session: Session = Depends(get_db)):
     return crud.add(session, daily)
 
 
-@app.post("/api/Daily/Update")
+@app.post("/api/Daily/Update", responses={400: {"model": str}})
 def update(daily: Daily, session: Session = Depends(get_db)):
     return crud.update(session, daily)
 

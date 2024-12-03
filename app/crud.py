@@ -3,6 +3,7 @@ from dateutil import tz
 from datetime import datetime
 from model import Daily
 from db import DailyTable
+from api_error import ApiError
 
 UTC = tz.gettz("UTC")
 
@@ -30,18 +31,23 @@ def get_all(session: Session) -> list[Daily]:
     return results
 
 
-def get(session: Session, id: int) -> Daily:
+def get(session: Session, id: int) -> Daily | ApiError:
     """1件取得"""
-    item = (
-        session.query(DailyTable).filter(DailyTable.id == id).first()
-    )  # TODO:エラー処理
+    item = session.query(DailyTable).filter(DailyTable.id == id).first()
+
+    if item == None:
+        return ApiError("DataNotFound")
+
     result = convert(item)
     return result
 
 
 def add(session: Session, daily: Daily):
     """登録"""
-    # TODO:エラー処理
+    exists = session.query(DailyTable).filter(DailyTable.date == daily.date).first()
+    if exists != None:
+        return ApiError("DateDuplicate")
+
     item = DailyTable(date=daily.date, content=daily.content, weather=daily.weather)
     session.add(item)
     session.commit()
@@ -50,7 +56,14 @@ def add(session: Session, daily: Daily):
 
 def update(session: Session, daily: Daily):
     """更新"""
-    # TODO:エラー処理
+    exists = (
+        session.query(DailyTable)
+        .filter(DailyTable.id != daily.id and DailyTable.date == daily.date)
+        .first()
+    )
+    if exists != None:
+        return ApiError("DateDuplicate")
+
     item = session.query(DailyTable).filter(DailyTable.id == daily.id).first()
     item.date = daily.date
     item.content = daily.content
@@ -62,6 +75,5 @@ def update(session: Session, daily: Daily):
 
 def remove(session: Session, daily: Daily):
     """削除"""
-    # TODO:エラー処理
     session.query(DailyTable).filter(DailyTable.id == daily.id).delete()
     session.commit()
